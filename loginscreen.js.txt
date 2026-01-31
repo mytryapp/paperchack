@@ -1,0 +1,232 @@
+import React, { useState } from 'react';
+import {
+View,
+Text,
+TextInput,
+TouchableOpacity,
+StyleSheet,
+Image,
+KeyboardAvoidingView,
+Platform
+} from 'react-native';
+
+const LoginScreen = ({ navigation }) => {
+const [phone, setPhone] = useState('');
+const [otp, setOtp] = useState('');
+const [showOtp, setShowOtp] = useState(false);
+
+const handleGetOtp = () => {
+// Simple validation
+if (phone.length === 10) {
+setShowOtp(true);
+// In production: Send OTP to phone
+// For testing: Auto-fill 123456
+setOtp('123456');
+}
+};
+
+const handleLogin = () => {
+if (otp === '123456') {
+navigation.navigate('Dashboard');
+}
+};
+
+return (
+<KeyboardAvoidingView
+style={styles.container}
+behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+>
+{/* Header */}
+<View style={styles.header}>
+<Text style={styles.logo}>📄</Text>
+<Text style={styles.appName}>PaperCheck</Text>
+<Text style={styles.tagline}>Your Vehicle Papers Guardian</Text>
+</View>
+
+{/* Login Form */}
+<View style={styles.formContainer}>
+<Text style={styles.title}>Login with Mobile</Text>
+
+{/* Phone Input */}
+<View style={styles.inputContainer}>
+<Text style={styles.label}>Mobile Number</Text>
+<View style={styles.phoneInput}>
+<Text style={styles.countryCode}>+91</Text>
+<TextInput
+style={styles.input}
+placeholder="9876543210"
+keyboardType="phone-pad"
+maxLength={10}
+value={phone}
+onChangeText={setPhone}
+/>
+</View>
+</View>
+
+{/* OTP Input (shown after Get OTP) */}
+{showOtp && (
+<View style={styles.inputContainer}>
+<Text style={styles.label}>Enter OTP</Text>
+<TextInput
+style={styles.input}
+placeholder="123456"
+keyboardType="number-pad"
+maxLength={6}
+value={otp}
+onChangeText={setOtp}
+/>
+<Text style={styles.otpHint}>Test OTP: 123456</Text>
+</View>
+)}
+
+{/* Buttons */}
+<View style={styles.buttonContainer}>
+{!showOtp ? (
+<TouchableOpacity
+style={[styles.button, !phone && styles.buttonDisabled]}
+onPress={handleGetOtp}
+disabled={!phone}
+>
+<Text style={styles.buttonText}>Get OTP</Text>
+</TouchableOpacity>
+) : (
+<TouchableOpacity
+style={[styles.button, !otp && styles.buttonDisabled]}
+onPress={handleLogin}
+disabled={!otp}
+>
+<Text style={styles.buttonText}>Login</Text>
+</TouchableOpacity>
+)}
+</View>
+
+{/* Terms */}
+<View style={styles.termsContainer}>
+<Text style={styles.termsText}>
+By continuing, you agree to our Terms & Privacy Policy
+</Text>
+</View>
+</View>
+
+{/* Footer */}
+<View style={styles.footer}>
+<Text style={styles.footerText}>Need help? Contact: support@papercheck.in</Text>
+</View>
+</KeyboardAvoidingView>
+);
+};
+
+const styles = StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: '#1E40AF',
+},
+header: {
+alignItems: 'center',
+paddingTop: 60,
+paddingBottom: 40,
+},
+logo: {
+fontSize: 60,
+marginBottom: 10,
+},
+appName: {
+fontSize: 32,
+fontWeight: 'bold',
+color: 'white',
+marginBottom: 5,
+},
+tagline: {
+fontSize: 16,
+color: '#BFDBFE',
+},
+formContainer: {
+backgroundColor: 'white',
+borderTopLeftRadius: 30,
+borderTopRightRadius: 30,
+padding: 20,
+flex: 1,
+},
+title: {
+fontSize: 24,
+fontWeight: '600',
+color: '#1E293B',
+marginBottom: 30,
+textAlign: 'center',
+},
+inputContainer: {
+marginBottom: 25,
+},
+label: {
+fontSize: 16,
+color: '#475569',
+marginBottom: 8,
+fontWeight: '500',
+},
+phoneInput: {
+flexDirection: 'row',
+alignItems: 'center',
+borderWidth: 1,
+borderColor: '#CBD5E1',
+borderRadius: 12,
+overflow: 'hidden',
+},
+countryCode: {
+backgroundColor: '#F1F5F9',
+paddingHorizontal: 20,
+paddingVertical: 15,
+fontSize: 16,
+color: '#475569',
+},
+input: {
+flex: 1,
+paddingHorizontal: 15,
+paddingVertical: 15,
+fontSize: 16,
+color: '#0F172A',
+},
+otpHint: {
+fontSize: 12,
+color: '#64748B',
+marginTop: 5,
+fontStyle: 'italic',
+},
+buttonContainer: {
+marginTop: 10,
+},
+button: {
+backgroundColor: '#10B981',
+paddingVertical: 16,
+borderRadius: 12,
+alignItems: 'center',
+},
+buttonDisabled: {
+backgroundColor: '#86EFAC',
+},
+buttonText: {
+color: 'white',
+fontSize: 18,
+fontWeight: '600',
+},
+termsContainer: {
+marginTop: 30,
+paddingHorizontal: 10,
+},
+termsText: {
+fontSize: 12,
+color: '#64748B',
+textAlign: 'center',
+lineHeight: 18,
+},
+footer: {
+padding: 20,
+alignItems: 'center',
+backgroundColor: 'white',
+},
+footerText: {
+fontSize: 12,
+color: '#64748B',
+},
+});
+
+export default LoginScreen;
