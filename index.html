@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Paper Chack</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>📄 Paper Chack</h1>
+  <p>Apni gaadi ke papers safe rakho</p>
+
+  <div class="box">
+    <h2>Add Vehicle</h2>
+
+    <input type="text" id="vehicleNo" placeholder="Vehicle Number (e.g. UP32AB1234)">
+    
+    <select id="vehicleType">
+      <option value="">Select Vehicle Type</option>
+      <option>Bike</option>
+      <option>Car</option>
+    </select>
+
+    <input type="date" id="insuranceDate">
+    <label>Insurance Expiry Date</label>
+
+    <input type="date" id="pucDate">
+    <label>PUC Expiry Date</label>
+
+    <button onclick="saveData()">Save Details</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
