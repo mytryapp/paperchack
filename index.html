@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Paper Chack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<header>
   <h1>📄 Paper Chack</h1>
-  <p>Apni gaadi ke papers safe rakho</p>
+  <p>All your vehicle papers. Safe. Smart. Simple.</p>
+</header>
 
-  <div class="box">
+<main>
+  <section class="card">
     <h2>Add Vehicle</h2>
 
     <input type="text" id="vehicleNo" placeholder="Vehicle Number (UP32AB1234)">
-
+    
     <select id="vehicleType">
       <option value="">Select Vehicle Type</option>
       <option>Bike</option>
@@ -27,21 +31,29 @@
     <label>PUC Expiry</label>
     <input type="date" id="pucDate">
 
-    <label>RC Upload</label>
-    <input type="file" id="rcFile">
+    <label>Last Service Date</label>
+    <input type="date" id="serviceDate">
 
-    <label>Insurance Upload</label>
-    <input type="file" id="insuranceFile">
+    <label>Emergency Contact Number</label>
+    <input type="tel" id="emergencyContact" placeholder="10 digit mobile number">
 
-    <button onclick="saveData()">Save Details</button>
-  </div>
+    <button onclick="saveData()">➕ Save Vehicle</button>
+  </section>
 
-  <div class="box" style="margin-top:20px;">
-  <h2>Saved Vehicles</h2>
-  <div id="vehicleList">No vehicles added</div>
-</div>
+  <section class="card">
+    <h2>Your Vehicles</h2>
+    <div id="vehicleList">No vehicles added</div>
+  </section>
 
-  <script src="script.js"></script>
+  <section class="card emergency">
+    <button onclick="openEmergencyMode()">🚨 Emergency Mode</button>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 Paper Chack • Made for India 🇮🇳</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
-
