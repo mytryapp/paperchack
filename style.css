@@ -1,26 +1,51 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  margin: 0;
+  background: #f4f6f8;
+  color: #333;
+}
+
+header {
+  background: linear-gradient(135deg, #2e7d32, #43a047);
+  color: white;
+  padding: 20px;
   text-align: center;
-  padding-top: 40px;
 }
 
-h1 {
-  color: #2e7d32;
+header h1 {
+  margin: 0;
 }
 
-.box {
-  background: white;
-  width: 320px;
+main {
+  max-width: 900px;
   margin: auto;
   padding: 20px;
-  border-radius: 8px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #2e7d32;
 }
 
 input, select, button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
 }
 
 button {
@@ -28,4 +53,36 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover {
+  background: #1b5e20;
+}
+
+.vehicle-box {
+  border-left: 6px solid #2e7d32;
+  padding: 12px;
+  margin-top: 12px;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+.status-green { color: green; font-weight: bold; }
+.status-yellow { color: orange; font-weight: bold; }
+.status-red { color: red; font-weight: bold; }
+
+.emergency button {
+  background: #d32f2f;
+  font-size: 18px;
+}
+
+.emergency button:hover {
+  background: #b71c1c;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  color: #777;
 }
