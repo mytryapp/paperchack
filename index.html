@@ -13,21 +13,32 @@
   <div class="box">
     <h2>Add Vehicle</h2>
 
-    <input type="text" id="vehicleNo" placeholder="Vehicle Number (e.g. UP32AB1234)">
-    
+    <input type="text" id="vehicleNo" placeholder="Vehicle Number (UP32AB1234)">
+
     <select id="vehicleType">
       <option value="">Select Vehicle Type</option>
       <option>Bike</option>
       <option>Car</option>
     </select>
 
+    <label>Insurance Expiry</label>
     <input type="date" id="insuranceDate">
-    <label>Insurance Expiry Date</label>
 
+    <label>PUC Expiry</label>
     <input type="date" id="pucDate">
-    <label>PUC Expiry Date</label>
+
+    <label>RC Upload</label>
+    <input type="file" id="rcFile">
+
+    <label>Insurance Upload</label>
+    <input type="file" id="insuranceFile">
 
     <button onclick="saveData()">Save Details</button>
+  </div>
+
+  <div class="box" style="margin-top:20px;">
+    <h2>Saved Vehicle</h2>
+    <p id="savedData">No data saved</p>
   </div>
 
   <script src="script.js"></script>
