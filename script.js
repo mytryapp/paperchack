@@ -23,7 +23,6 @@ function saveData() {
 
   clearForm();
   showVehicles();
-  checkExpiryAll();
 }
 
 function clearForm() {
@@ -45,6 +44,8 @@ function showVehicles() {
   listDiv.innerHTML = "";
 
   vehicles.forEach(v => {
+    const health = getHealthStatus(v);
+
     const div = document.createElement("div");
     div.style.border = "1px solid #ccc";
     div.style.padding = "10px";
@@ -53,38 +54,40 @@ function showVehicles() {
     div.innerHTML = `
       <strong>${v.vehicleNo}</strong> (${v.vehicleType})<br>
       Insurance: ${v.insuranceDate || "N/A"}<br>
-      PUC: ${v.pucDate || "N/A"}
+      PUC: ${v.pucDate || "N/A"}<br>
+      <strong>Status:</strong> ${health}
     `;
 
     listDiv.appendChild(div);
   });
 }
 
-function checkExpiryAll() {
-  const vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
+function getHealthStatus(vehicle) {
   const today = new Date();
 
-  vehicles.forEach(v => {
-    checkSingleExpiry(v.vehicleNo + " Insurance", v.insuranceDate, today);
-    checkSingleExpiry(v.vehicleNo + " PUC", v.pucDate, today);
-  });
+  const insuranceStatus = checkStatus(vehicle.insuranceDate, today);
+  const pucStatus = checkStatus(vehicle.pucDate, today);
+
+  if (insuranceStatus === "expired" || pucStatus === "expired") {
+    return "🔴 EXPIRED";
+  }
+
+  if (insuranceStatus === "soon" || pucStatus === "soon") {
+    return "🟡 EXPIRING SOON";
+  }
+
+  return "🟢 ALL GOOD";
 }
 
-function checkSingleExpiry(name, expiryDate, today) {
-  if (!expiryDate) return;
+function checkStatus(expiryDate, today) {
+  if (!expiryDate) return "ok";
 
-  const expDate = new Date(expiryDate);
-  const diffTime = expDate - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const exp = new Date(expiryDate);
+  const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
 
-  if (diffDays < 0) {
-    alert("❌ " + name + " EXPIRED!");
-  } else if (diffDays <= 7) {
-    alert("⚠️ " + name + " sirf " + diffDays + " din me expire!");
-  } else if (diffDays <= 30) {
-    alert("ℹ️ " + name + " 30 din ke andar expire hone wala hai");
-  }
+  if (diffDays < 0) return "expired";
+  if (diffDays <= 30) return "soon";
+  return "ok";
 }
 
 showVehicles();
-checkExpiryAll();
