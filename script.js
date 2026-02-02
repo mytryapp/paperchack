@@ -5,15 +5,33 @@ function saveData() {
   const pucDate = document.getElementById("pucDate").value;
 
   if (vehicleNo === "" || vehicleType === "") {
-    alert("Please fill vehicle details");
+    alert("Vehicle details fill karo");
     return;
   }
 
-  alert(
-    "Saved!\n\n" +
-    "Vehicle: " + vehicleNo +
-    "\nType: " + vehicleType +
-    "\nInsurance Expiry: " + insuranceDate +
-    "\nPUC Expiry: " + pucDate
-  );
+  const data = {
+    vehicleNo,
+    vehicleType,
+    insuranceDate,
+    pucDate
+  };
+
+  localStorage.setItem("paperChackData", JSON.stringify(data));
+  showData();
+  alert("Data saved successfully ✅");
 }
+
+function showData() {
+  const saved = localStorage.getItem("paperChackData");
+
+  if (!saved) return;
+
+  const data = JSON.parse(saved);
+  document.getElementById("savedData").innerText =
+    "Vehicle: " + data.vehicleNo +
+    "\nType: " + data.vehicleType +
+    "\nInsurance Expiry: " + data.insuranceDate +
+    "\nPUC Expiry: " + data.pucDate;
+}
+
+showData();
