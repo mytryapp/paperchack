@@ -3,6 +3,7 @@ function saveData() {
   const vehicleType = document.getElementById("vehicleType").value;
   const insuranceDate = document.getElementById("insuranceDate").value;
   const pucDate = document.getElementById("pucDate").value;
+  const emergencyContact = document.getElementById("emergencyContact").value;
 
   if (vehicleNo === "" || vehicleType === "") {
     alert("Vehicle details fill karo");
@@ -14,7 +15,8 @@ function saveData() {
     vehicleNo,
     vehicleType,
     insuranceDate,
-    pucDate
+    pucDate,
+    emergencyContact
   };
 
   let vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
@@ -30,6 +32,7 @@ function clearForm() {
   document.getElementById("vehicleType").value = "";
   document.getElementById("insuranceDate").value = "";
   document.getElementById("pucDate").value = "";
+  document.getElementById("emergencyContact").value = "";
 }
 
 function showVehicles() {
@@ -71,23 +74,43 @@ function getHealthStatus(vehicle) {
   if (insuranceStatus === "expired" || pucStatus === "expired") {
     return "🔴 EXPIRED";
   }
-
   if (insuranceStatus === "soon" || pucStatus === "soon") {
     return "🟡 EXPIRING SOON";
   }
-
   return "🟢 ALL GOOD";
 }
 
 function checkStatus(expiryDate, today) {
   if (!expiryDate) return "ok";
-
   const exp = new Date(expiryDate);
   const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
-
   if (diffDays < 0) return "expired";
   if (diffDays <= 30) return "soon";
   return "ok";
+}
+
+/* 🚨 EMERGENCY MODE */
+function openEmergencyMode() {
+  const vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
+
+  if (vehicles.length === 0) {
+    alert("No vehicle data available");
+    return;
+  }
+
+  let text = "🚨 EMERGENCY MODE 🚨\n\n";
+
+  vehicles.forEach(v => {
+    text +=
+      "Vehicle: " + v.vehicleNo + " (" + v.vehicleType + ")\n" +
+      "Insurance: " + (v.insuranceDate || "N/A") + "\n" +
+      "PUC: " + (v.pucDate || "N/A") + "\n" +
+      "Status: " + getHealthStatus(v) + "\n" +
+      "Emergency Contact: " + (v.emergencyContact || "N/A") +
+      "\n\n------------------\n\n";
+  });
+
+  alert(text);
 }
 
 showVehicles();
