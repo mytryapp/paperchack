@@ -9,40 +9,65 @@ function saveData() {
     return;
   }
 
-  const data = {
+  const newVehicle = {
+    id: Date.now(),
     vehicleNo,
     vehicleType,
     insuranceDate,
     pucDate
   };
 
-  localStorage.setItem("paperChackData", JSON.stringify(data));
-  alert("Data saved successfully ✅");
-  showData();
-  checkExpiry();
+  let vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
+  vehicles.push(newVehicle);
+  localStorage.setItem("paperChackVehicles", JSON.stringify(vehicles));
+
+  clearForm();
+  showVehicles();
+  checkExpiryAll();
 }
 
-function showData() {
-  const saved = localStorage.getItem("paperChackData");
-  if (!saved) return;
-
-  const data = JSON.parse(saved);
-  document.getElementById("savedData").innerText =
-    "Vehicle: " + data.vehicleNo +
-    "\nType: " + data.vehicleType +
-    "\nInsurance Expiry: " + data.insuranceDate +
-    "\nPUC Expiry: " + data.pucDate;
+function clearForm() {
+  document.getElementById("vehicleNo").value = "";
+  document.getElementById("vehicleType").value = "";
+  document.getElementById("insuranceDate").value = "";
+  document.getElementById("pucDate").value = "";
 }
 
-function checkExpiry() {
-  const saved = localStorage.getItem("paperChackData");
-  if (!saved) return;
+function showVehicles() {
+  const listDiv = document.getElementById("vehicleList");
+  const vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
 
-  const data = JSON.parse(saved);
+  if (vehicles.length === 0) {
+    listDiv.innerText = "No vehicles added";
+    return;
+  }
+
+  listDiv.innerHTML = "";
+
+  vehicles.forEach(v => {
+    const div = document.createElement("div");
+    div.style.border = "1px solid #ccc";
+    div.style.padding = "10px";
+    div.style.marginTop = "10px";
+
+    div.innerHTML = `
+      <strong>${v.vehicleNo}</strong> (${v.vehicleType})<br>
+      Insurance: ${v.insuranceDate || "N/A"}<br>
+      PUC: ${v.pucDate || "N/A"}
+    `;
+
+    listDiv.appendChild(div);
+  });
+}
+
+function checkExpiryAll() {
+  const vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
   const today = new Date();
 
-  checkSingleExpiry("Insurance", data.insuranceDate, today);
-  checkSingleExpiry("PUC", data.pucDate, today);
+  vehicles.forEach(v => {
+    checkSingleExpiry(v.vehicleNo + " Insurance", v.insuranceDate, today);
+    checkSingleExpiry(v.vehicleNo + " PUC", v.pucDate, today);
+  });
 }
 
 function checkSingleExpiry(name, expiryDate, today) {
@@ -53,13 +78,13 @@ function checkSingleExpiry(name, expiryDate, today) {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffDays < 0) {
-    alert("❌ " + name + " EXPIRED ho chuka hai!");
+    alert("❌ " + name + " EXPIRED!");
   } else if (diffDays <= 7) {
-    alert("⚠️ " + name + " sirf " + diffDays + " din me expire ho jayega!");
+    alert("⚠️ " + name + " sirf " + diffDays + " din me expire!");
   } else if (diffDays <= 30) {
     alert("ℹ️ " + name + " 30 din ke andar expire hone wala hai");
   }
 }
 
-showData();
-checkExpiry();
+showVehicles();
+checkExpiryAll();
