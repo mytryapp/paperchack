@@ -4,42 +4,58 @@
   <meta charset="UTF-8">
   <title>Paper Chack</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
-</head>
+
+  <!-- Firebase (future use) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
 
 <body>
+
+<!-- 🔒 LOCK SCREEN (FIXED & CORRECT PLACE) -->
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-box">
+    <h2>🔐 Enter PIN</h2>
+    <input type="password" id="pinInput" maxlength="4" placeholder="4-digit PIN">
+    <button onclick="unlockApp()">Unlock</button>
+  </div>
+</div>
 
 <header>
   <h1>📄 Paper Chack</h1>
   <p>All your vehicle papers. Safe. Smart. Simple.</p>
 </header>
 
-  <section class="card">
-  <h2>👤 My Profile</h2>
-
-  <input type="text" id="userName" placeholder="Your Name">
-  <input type="tel" id="userMobile" placeholder="Mobile Number">
-  <input type="text" id="userCity" placeholder="City">
-
-  <button onclick="saveProfile()">💾 Save Profile</button>
-
-  <p id="profileInfo" style="margin-top:10px;color:#555;"></p>
-</section>
-  
-<label>Profile Photo</label>
-<input type="file" id="profilePhoto" accept="image/*">
-<img id="profilePreview" style="width:80px;border-radius:50%;margin-top:10px;display:none;">
-<button onclick="editProfile()" style="background:#0277bd;margin-top:10px;">
-  ✏️ Edit Profile
-</button>
-
-
 <main>
+
+  <!-- 👤 PROFILE -->
   <section class="card">
-    <h2>Add Vehicle</h2>
+    <h2>👤 My Profile</h2>
+
+    <input type="text" id="userName" placeholder="Your Name">
+    <input type="tel" id="userMobile" placeholder="Mobile Number">
+    <input type="text" id="userCity" placeholder="City">
+
+    <label>Profile Photo</label>
+    <input type="file" id="profilePhoto" accept="image/*">
+    <img id="profilePreview"
+         style="width:80px;border-radius:50%;margin-top:10px;display:none;">
+
+    <button onclick="saveProfile()">💾 Save Profile</button>
+    <button onclick="editProfile()" style="background:#0277bd;margin-top:10px;">
+      ✏️ Edit Profile
+    </button>
+
+    <p id="profileInfo" style="margin-top:10px;color:#555;"></p>
+  </section>
+
+  <!-- 🚗 ADD VEHICLE -->
+  <section class="card">
+    <h2>➕ Add Vehicle</h2>
 
     <input type="text" id="vehicleNo" placeholder="Vehicle Number (UP32AB1234)">
     
@@ -64,14 +80,38 @@
     <button onclick="saveData()">➕ Save Vehicle</button>
   </section>
 
+  <!-- 🚘 VEHICLE LIST -->
   <section class="card">
     <h2>Your Vehicles</h2>
     <div id="vehicleList">No vehicles added</div>
   </section>
 
+  <!-- ⏰ REMINDER SETTINGS -->
+  <section class="card">
+    <h2>⏰ Reminder Settings</h2>
+
+    <label>Notify me before</label>
+    <select id="reminderDays">
+      <option value="30">30 Days</option>
+      <option value="15">15 Days</option>
+      <option value="7">7 Days</option>
+    </select>
+
+    <button onclick="saveReminder()">Save Reminder Preference</button>
+  </section>
+
+  <!-- ☁️ BACKUP / RESTORE -->
+  <section class="card">
+    <h2>☁️ Backup & Restore</h2>
+    <button onclick="backupData()">Backup Now</button>
+    <button onclick="restoreData()">Restore Backup</button>
+  </section>
+
+  <!-- 🚨 EMERGENCY MODE -->
   <section class="card emergency">
     <button onclick="openEmergencyMode()">🚨 Emergency Mode</button>
   </section>
+
 </main>
 
 <footer>
@@ -80,15 +120,4 @@
 
 <script src="script.js"></script>
 </body>
-  <div id="lockScreen" style="display:none;position:fixed;inset:0;
-background:#2e7d32;color:white;z-index:9999;
-display:flex;flex-direction:column;align-items:center;justify-content:center;">
-
-  <h2>🔒 Enter PIN</h2>
-  <input type="password" id="pinInput" maxlength="4"
-    style="padding:10px;font-size:20px;text-align:center;">
-  <button onclick="unlockApp()" style="margin-top:10px;">Unlock</button>
-</div>
-
 </html>
-
