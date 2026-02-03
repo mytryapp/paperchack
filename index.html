@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Paper Chack</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
 
-  <!-- Firebase (future use) -->
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Firebase (future cloud) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -16,49 +19,46 @@
 
 <body>
 
-<!-- 🔒 LOCK SCREEN (FIXED & CORRECT PLACE) -->
+<!-- 🔒 LOCK SCREEN -->
 <div id="lockScreen" class="lock-screen">
   <div class="lock-box">
     <h2>🔐 Enter PIN</h2>
-    <input type="password" id="pinInput" maxlength="4" placeholder="4-digit PIN">
+    <input type="password" id="pinInput" maxlength="4" placeholder="4-digit PIN" />
     <button onclick="unlockApp()">Unlock</button>
   </div>
 </div>
 
 <header>
-  <h1>📄 Paper Chack</h1>
-  <p>All your vehicle papers. Safe. Smart. Simple.</p>
+  <h1 id="appTitle">📄 Paper Chack</h1>
+  <p id="appTagline">All your vehicle papers. Safe. Smart. Simple.</p>
+  <button class="lang-btn" onclick="toggleLanguage()">🌐 हिंदी / English</button>
 </header>
 
 <main>
 
   <!-- 👤 PROFILE -->
   <section class="card">
-    <h2>👤 My Profile</h2>
+    <h2 id="profileTitle">👤 My Profile</h2>
 
-    <input type="text" id="userName" placeholder="Your Name">
-    <input type="tel" id="userMobile" placeholder="Mobile Number">
-    <input type="text" id="userCity" placeholder="City">
+    <input type="text" id="userName" placeholder="Your Name" />
+    <input type="tel" id="userMobile" placeholder="Mobile Number" />
+    <input type="text" id="userCity" placeholder="City" />
 
     <label>Profile Photo</label>
-    <input type="file" id="profilePhoto" accept="image/*">
-    <img id="profilePreview"
-         style="width:80px;border-radius:50%;margin-top:10px;display:none;">
+    <input type="file" id="profilePhoto" accept="image/*" />
+    <img id="profilePreview" class="profile-img" />
 
     <button onclick="saveProfile()">💾 Save Profile</button>
-    <button onclick="editProfile()" style="background:#0277bd;margin-top:10px;">
-      ✏️ Edit Profile
-    </button>
+    <button class="secondary" onclick="editProfile()">✏️ Edit Profile</button>
 
-    <p id="profileInfo" style="margin-top:10px;color:#555;"></p>
+    <p id="profileInfo"></p>
   </section>
 
   <!-- 🚗 ADD VEHICLE -->
   <section class="card">
-    <h2>➕ Add Vehicle</h2>
+    <h2 id="addVehicleTitle">➕ Add Vehicle</h2>
 
-    <input type="text" id="vehicleNo" placeholder="Vehicle Number (UP32AB1234)">
-    
+    <input type="text" id="vehicleNo" placeholder="Vehicle Number (UP32AB1234)" />
     <select id="vehicleType">
       <option value="">Select Vehicle Type</option>
       <option>Bike</option>
@@ -66,48 +66,55 @@
     </select>
 
     <label>Insurance Expiry</label>
-    <input type="date" id="insuranceDate">
+    <input type="date" id="insuranceDate" />
 
     <label>PUC Expiry</label>
-    <input type="date" id="pucDate">
+    <input type="date" id="pucDate" />
 
     <label>Last Service Date</label>
-    <input type="date" id="serviceDate">
+    <input type="date" id="serviceDate" />
 
     <label>Emergency Contact Number</label>
-    <input type="tel" id="emergencyContact" placeholder="10 digit mobile number">
+    <input type="tel" id="emergencyContact" placeholder="10 digit mobile number" />
 
-    <button onclick="saveData()">➕ Save Vehicle</button>
+    <button onclick="saveVehicle()">➕ Save Vehicle</button>
   </section>
 
-  <!-- 🚘 VEHICLE LIST -->
+  <!-- 🚘 VEHICLES -->
   <section class="card">
-    <h2>Your Vehicles</h2>
+    <h2 id="vehicleListTitle">Your Vehicles</h2>
     <div id="vehicleList">No vehicles added</div>
+    <button onclick="exportPDF()">📄 Export PDF</button>
   </section>
 
-  <!-- ⏰ REMINDER SETTINGS -->
+  <!-- ⏰ REMINDER -->
   <section class="card">
-    <h2>⏰ Reminder Settings</h2>
-
-    <label>Notify me before</label>
+    <h2 id="reminderTitle">⏰ Reminder Settings</h2>
     <select id="reminderDays">
       <option value="30">30 Days</option>
       <option value="15">15 Days</option>
       <option value="7">7 Days</option>
     </select>
-
-    <button onclick="saveReminder()">Save Reminder Preference</button>
+    <button onclick="saveReminder()">Save Reminder</button>
   </section>
 
-  <!-- ☁️ BACKUP / RESTORE -->
+  <!-- ☁️ BACKUP -->
   <section class="card">
-    <h2>☁️ Backup & Restore</h2>
+    <h2 id="backupTitle">☁️ Backup & Restore</h2>
     <button onclick="backupData()">Backup Now</button>
     <button onclick="restoreData()">Restore Backup</button>
   </section>
 
-  <!-- 🚨 EMERGENCY MODE -->
+  <!-- 🔐 CHANGE PIN -->
+  <section class="card">
+    <h2>🔐 Change PIN</h2>
+    <input type="password" id="oldPin" placeholder="Old PIN" />
+    <input type="password" id="newPin" placeholder="New PIN" maxlength="4" />
+    <input type="password" id="confirmPin" placeholder="Confirm PIN" maxlength="4" />
+    <button onclick="changePin()">Change PIN</button>
+  </section>
+
+  <!-- 🚨 EMERGENCY -->
   <section class="card emergency">
     <button onclick="openEmergencyMode()">🚨 Emergency Mode</button>
   </section>
