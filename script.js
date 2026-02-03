@@ -26,10 +26,61 @@ function showVehicles() {
   const listDiv = document.getElementById("vehicleList");
   const list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
 
-  if (list.length === 0) {
+  if (!list.length) {
     listDiv.innerText = "No vehicles added";
     return;
   }
+
+  listDiv.innerHTML = "";
+
+  list.forEach((v, index) => {
+    listDiv.innerHTML += `
+      <div class="vehicle-box">
+        <strong>${v.vehicleNo}</strong> (${v.vehicleType})<br>
+        Insurance: ${v.insuranceDate || "N/A"}<br>
+        PUC: ${v.pucDate || "N/A"}<br>
+
+        <button onclick="editVehicle(${index})">✏️ Edit</button>
+        <button onclick="deleteVehicle(${index})"
+          style="background:#d32f2f;margin-left:5px;">🗑 Delete</button>
+      </div>
+    `;
+  });
+}
+
+function deleteVehicle(index) {
+  let list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
+  if (!confirm("Delete this vehicle?")) return;
+
+  list.splice(index, 1);
+  localStorage.setItem("paperChackVehicles", JSON.stringify(list));
+  showVehicles();
+}
+
+function editVehicle(index) {
+  const list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
+  const v = list[index];
+
+  vehicleNo.value = v.vehicleNo;
+  vehicleType.value = v.vehicleType;
+  insuranceDate.value = v.insuranceDate;
+  pucDate.value = v.pucDate;
+  serviceDate.value = v.serviceDate;
+  emergencyContact.value = v.emergencyContact;
+
+  deleteVehicle(index);
+}
+
+function saveReminder() {
+  const days = reminderDays.value;
+  localStorage.setItem("paperChackReminderDays", days);
+  alert("Reminder set to " + days + " days before");
+}
+
+function getReminderDays() {
+  return Number(localStorage.getItem("paperChackReminderDays") || 30);
+}
+
 
   listDiv.innerHTML = "";
 
@@ -230,5 +281,26 @@ function changePin() {
   document.getElementById("oldPin").value = "";
   document.getElementById("newPin").value = "";
   document.getElementById("confirmPin").value = "";
+}
+
+function backupData() {
+  const data = {
+    vehicles: localStorage.getItem("paperChackVehicles"),
+    profile: localStorage.getItem("paperChackProfile")
+  };
+
+  localStorage.setItem("paperChackBackup", JSON.stringify(data));
+  alert("Backup successful ✅");
+}
+
+function restoreData() {
+  const backup = JSON.parse(localStorage.getItem("paperChackBackup"));
+  if (!backup) return alert("No backup found");
+
+  localStorage.setItem("paperChackVehicles", backup.vehicles);
+  localStorage.setItem("paperChackProfile", backup.profile);
+  showVehicles();
+  showProfile();
+  alert("Data restored ✅");
 }
 
