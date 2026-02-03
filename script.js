@@ -95,3 +95,140 @@ Contact: ${v.emergencyContact || "N/A"}
 }
 
 showVehicles();
+
+/* 👤 USER PROFILE */
+function saveProfile() {
+  const profile = {
+    name: userName.value,
+    mobile: userMobile.value,
+    city: userCity.value
+  };
+
+  if (!profile.name || !profile.mobile) {
+    alert("Name & mobile required");
+    return;
+  }
+
+  localStorage.setItem("paperChackProfile", JSON.stringify(profile));
+  showProfile();
+}
+
+function showProfile() {
+  const data = JSON.parse(localStorage.getItem("paperChackProfile"));
+  if (!data) return;
+
+  const vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
+
+  document.getElementById("profileInfo").innerHTML = `
+    <strong>${data.name}</strong><br>
+    📞 ${data.mobile}<br>
+    📍 ${data.city || "N/A"}<br>
+    🚗 Vehicles Added: ${vehicles.length}
+  `;
+
+  userName.value = data.name;
+  userMobile.value = data.mobile;
+  userCity.value = data.city || "";
+}
+
+showProfile();
+// 👤 PROFILE PHOTO
+profilePhoto?.addEventListener("change", function () {
+  const file = this.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function () {
+    localStorage.setItem("paperChackProfilePhoto", reader.result);
+    showProfilePhoto();
+  };
+  reader.readAsDataURL(file);
+});
+
+function showProfilePhoto() {
+  const img = localStorage.getItem("paperChackProfilePhoto");
+  if (!img) return;
+
+  const preview = document.getElementById("profilePreview");
+  preview.src = img;
+  preview.style.display = "block";
+}
+
+showProfilePhoto();
+
+// 🔒 APP LOCK
+function setPin(pin) {
+  localStorage.setItem("paperChackPIN", pin);
+}
+
+function unlockApp() {
+  const savedPin = localStorage.getItem("paperChackPIN");
+  const entered = document.getElementById("pinInput").value;
+
+  if (entered === savedPin) {
+    document.getElementById("lockScreen").style.display = "none";
+  } else {
+    alert("Wrong PIN");
+  }
+}
+
+// First time PIN set (default)
+if (!localStorage.getItem("paperChackPIN")) {
+  localStorage.setItem("paperChackPIN", "0000");
+}
+
+}
+
+// Show lock screen
+document.getElementById("lockScreen").style.display = "flex";
+
+// ☁️ FIREBASE CONFIG (replace with your own later)
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_ID",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Future ready (no error even if not used now)
+function editProfile() {
+  const data = JSON.parse(localStorage.getItem("paperChackProfile"));
+  if (!data) {
+    alert("No profile found");
+    return;
+  }
+
+  userName.value = data.name;
+  userMobile.value = data.mobile;
+  userCity.value = data.city || "";
+
+  alert("Profile edit mode enabled ✏️\nDetails update karke Save Profile dabao");
+}
+
+function changePin() {
+  const savedPin = localStorage.getItem("paperChackPIN");
+  const oldPin = document.getElementById("oldPin").value;
+  const newPin = document.getElementById("newPin").value;
+  const confirmPin = document.getElementById("confirmPin").value;
+
+  if (oldPin !== savedPin) {
+    alert("Old PIN incorrect ❌");
+    return;
+  }
+
+  if (newPin.length !== 4 || newPin !== confirmPin) {
+    alert("New PIN invalid or not matching ❌");
+    return;
+  }
+
+  localStorage.setItem("paperChackPIN", newPin);
+  alert("PIN changed successfully 🔒✅");
+
+  document.getElementById("oldPin").value = "";
+  document.getElementById("newPin").value = "";
+  document.getElementById("confirmPin").value = "";
+}
+
