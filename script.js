@@ -1,306 +1,110 @@
-function saveData() {
-  const v = {
-    id: Date.now(),
-    vehicleNo: vehicleNo.value,
-    vehicleType: vehicleType.value,
-    insuranceDate: insuranceDate.value,
-    pucDate: pucDate.value,
-    serviceDate: serviceDate.value,
-    emergencyContact: emergencyContact.value
-  };
-
-  if (!v.vehicleNo || !v.vehicleType) {
-    alert("Vehicle number & type required");
-    return;
-  }
-
-  const list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
-  list.push(v);
-  localStorage.setItem("paperChackVehicles", JSON.stringify(list));
-
-  document.querySelectorAll("input,select").forEach(e => e.value = "");
-  showVehicles();
+/* 🔒 APP LOCK */
+if (!localStorage.getItem("paperChackPIN")) localStorage.setItem("paperChackPIN","0000");
+window.onload = () => document.getElementById("lockScreen").style.display="flex";
+function unlockApp(){
+  if(pinInput.value===localStorage.getItem("paperChackPIN")){
+    lockScreen.style.display="none";
+  } else alert("Wrong PIN");
+}
+function changePin(){
+  if(oldPin.value!==localStorage.getItem("paperChackPIN")) return alert("Wrong old PIN");
+  if(newPin.value.length!==4 || newPin.value!==confirmPin.value) return alert("Invalid PIN");
+  localStorage.setItem("paperChackPIN",newPin.value); alert("PIN Changed");
 }
 
-function showVehicles() {
-  const listDiv = document.getElementById("vehicleList");
-  const list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
-
-  if (!list.length) {
-    listDiv.innerText = "No vehicles added";
-    return;
-  }
-
-  listDiv.innerHTML = "";
-
-  list.forEach((v, index) => {
-    listDiv.innerHTML += `
-      <div class="vehicle-box">
-        <strong>${v.vehicleNo}</strong> (${v.vehicleType})<br>
-        Insurance: ${v.insuranceDate || "N/A"}<br>
-        PUC: ${v.pucDate || "N/A"}<br>
-
-        <button onclick="editVehicle(${index})">✏️ Edit</button>
-        <button onclick="deleteVehicle(${index})"
-          style="background:#d32f2f;margin-left:5px;">🗑 Delete</button>
-      </div>
-    `;
-  });
+/* 🌐 LANGUAGE */
+let lang=localStorage.getItem("paperChackLang")||"en";
+const L={
+  en:{title:"Paper Chack",tag:"All your vehicle papers. Safe. Smart. Simple."},
+  hi:{title:"पेपर चेक",tag:"आपके वाहन के सभी कागज़ सुरक्षित और आसान"}
+};
+function applyLang(){
+  appTitle.innerText=L[lang].title;
+  appTagline.innerText=L[lang].tag;
 }
-
-function deleteVehicle(index) {
-  let list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
-  if (!confirm("Delete this vehicle?")) return;
-
-  list.splice(index, 1);
-  localStorage.setItem("paperChackVehicles", JSON.stringify(list));
-  showVehicles();
+function toggleLanguage(){
+  lang=lang==="en"?"hi":"en"; localStorage.setItem("paperChackLang",lang); applyLang();
 }
+applyLang();
 
-function editVehicle(index) {
-  const list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
-  const v = list[index];
-
-  vehicleNo.value = v.vehicleNo;
-  vehicleType.value = v.vehicleType;
-  insuranceDate.value = v.insuranceDate;
-  pucDate.value = v.pucDate;
-  serviceDate.value = v.serviceDate;
-  emergencyContact.value = v.emergencyContact;
-
-  deleteVehicle(index);
+/* 👤 PROFILE */
+function saveProfile(){
+  const p={name:userName.value,mobile:userMobile.value,city:userCity.value};
+  localStorage.setItem("paperChackProfile",JSON.stringify(p)); showProfile();
 }
-
-function saveReminder() {
-  const days = reminderDays.value;
-  localStorage.setItem("paperChackReminderDays", days);
-  alert("Reminder set to " + days + " days before");
-}
-
-function getReminderDays() {
-  return Number(localStorage.getItem("paperChackReminderDays") || 30);
-}
-
-
-  listDiv.innerHTML = "";
-
-  list.forEach(v => {
-    const health = getHealth(v);
-    const service = getService(v.serviceDate);
-
-    listDiv.innerHTML += `
-      <div class="vehicle-box">
-        <strong>${v.vehicleNo}</strong> (${v.vehicleType})<br>
-        Insurance: ${v.insuranceDate || "N/A"}<br>
-        PUC: ${v.pucDate || "N/A"}<br>
-        Service: ${service}<br>
-        Status: ${health}
-      </div>
-    `;
-  });
-}
-
-function getHealth(v) {
-  const i = checkDate(v.insuranceDate);
-  const p = checkDate(v.pucDate);
-
-  if (i === "red" || p === "red") return `<span class="status-red">🔴 EXPIRED</span>`;
-  if (i === "yellow" || p === "yellow") return `<span class="status-yellow">🟡 EXPIRING</span>`;
-  return `<span class="status-green">🟢 ALL GOOD</span>`;
-}
-
-function checkDate(d) {
-  if (!d) return "green";
-  const diff = (new Date(d) - new Date()) / 86400000;
-  if (diff < 0) return "red";
-  if (diff <= 30) return "yellow";
-  return "green";
-}
-
-function getService(d) {
-  if (!d) return "N/A";
-  const diff = (new Date() - new Date(d)) / 86400000;
-  if (diff > 90) return "🔴 OVERDUE";
-  if (diff > 75) return "🟡 DUE SOON";
-  return "🟢 OK";
-}
-
-function openEmergencyMode() {
-  const list = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
-  if (!list.length) return alert("No data");
-
-  let msg = "🚨 EMERGENCY MODE 🚨\n\n";
-  list.forEach(v => {
-    msg += `
-Vehicle: ${v.vehicleNo}
-Insurance: ${v.insuranceDate || "N/A"}
-PUC: ${v.pucDate || "N/A"}
-Service: ${getService(v.serviceDate)}
-Contact: ${v.emergencyContact || "N/A"}
-
-------------------
-`;
-  });
-
-  alert(msg);
-}
-
-showVehicles();
-
-/* 👤 USER PROFILE */
-function saveProfile() {
-  const profile = {
-    name: userName.value,
-    mobile: userMobile.value,
-    city: userCity.value
-  };
-
-  if (!profile.name || !profile.mobile) {
-    alert("Name & mobile required");
-    return;
-  }
-
-  localStorage.setItem("paperChackProfile", JSON.stringify(profile));
-  showProfile();
-}
-
-function showProfile() {
-  const data = JSON.parse(localStorage.getItem("paperChackProfile"));
-  if (!data) return;
-
-  const vehicles = JSON.parse(localStorage.getItem("paperChackVehicles")) || [];
-
-  document.getElementById("profileInfo").innerHTML = `
-    <strong>${data.name}</strong><br>
-    📞 ${data.mobile}<br>
-    📍 ${data.city || "N/A"}<br>
-    🚗 Vehicles Added: ${vehicles.length}
-  `;
-
-  userName.value = data.name;
-  userMobile.value = data.mobile;
-  userCity.value = data.city || "";
-}
-
-showProfile();
-// 👤 PROFILE PHOTO
-profilePhoto?.addEventListener("change", function () {
-  const file = this.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function () {
-    localStorage.setItem("paperChackProfilePhoto", reader.result);
-    showProfilePhoto();
-  };
-  reader.readAsDataURL(file);
-});
-
-function showProfilePhoto() {
-  const img = localStorage.getItem("paperChackProfilePhoto");
-  if (!img) return;
-
-  const preview = document.getElementById("profilePreview");
-  preview.src = img;
-  preview.style.display = "block";
-}
-
-showProfilePhoto();
-
-// 🔒 APP LOCK
-function setPin(pin) {
-  localStorage.setItem("paperChackPIN", pin);
-}
-
-function unlockApp() {
-  const savedPin = localStorage.getItem("paperChackPIN");
-  const entered = document.getElementById("pinInput").value;
-
-  if (entered === savedPin) {
-    document.getElementById("lockScreen").style.display = "none";
-  } else {
-    alert("Wrong PIN");
+function editProfile(){ showProfile(true); }
+function showProfile(edit=false){
+  const p=JSON.parse(localStorage.getItem("paperChackProfile")||"{}");
+  if(!edit){
+    profileInfo.innerHTML=`<b>${p.name||""}</b><br>${p.mobile||""}<br>${p.city||""}`;
   }
 }
-
-// First time PIN set (default)
-if (!localStorage.getItem("paperChackPIN")) {
-  localStorage.setItem("paperChackPIN", "0000");
-}
-
-}
-
-// Show lock screen
-document.getElementById("lockScreen").style.display = "flex";
-
-// ☁️ FIREBASE CONFIG (replace with your own later)
-const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_ID",
+profilePhoto.onchange=e=>{
+  const r=new FileReader(); r.onload=()=>{profilePreview.src=r.result;profilePreview.style.display="block";};
+  r.readAsDataURL(e.target.files[0]);
 };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Future ready (no error even if not used now)
-function editProfile() {
-  const data = JSON.parse(localStorage.getItem("paperChackProfile"));
-  if (!data) {
-    alert("No profile found");
-    return;
-  }
-
-  userName.value = data.name;
-  userMobile.value = data.mobile;
-  userCity.value = data.city || "";
-
-  alert("Profile edit mode enabled ✏️\nDetails update karke Save Profile dabao");
+/* 🚗 VEHICLES */
+function saveVehicle(){
+  const v={id:Date.now(),vehicleNo:vehicleNo.value,vehicleType:vehicleType.value,
+    insuranceDate:insuranceDate.value,pucDate:pucDate.value,
+    serviceDate:serviceDate.value,emergencyContact:emergencyContact.value};
+  let list=JSON.parse(localStorage.getItem("paperChackVehicles")||"[]");
+  list.push(v); localStorage.setItem("paperChackVehicles",JSON.stringify(list)); showVehicles();
+}
+function showVehicles(){
+  const list=JSON.parse(localStorage.getItem("paperChackVehicles")||"[]");
+  vehicleList.innerHTML=list.length?list.map((v,i)=>`
+    <div class="vehicle-box">
+      <b>${v.vehicleNo}</b> (${v.vehicleType})<br>
+      Insurance: ${v.insuranceDate||"N/A"}<br>
+      PUC: ${v.pucDate||"N/A"}<br>
+      Service: ${serviceStatus(v.serviceDate)}<br>
+      <button onclick="deleteVehicle(${i})">🗑 Delete</button>
+    </div>`).join(""):"No vehicles added";
+}
+function deleteVehicle(i){
+  let list=JSON.parse(localStorage.getItem("paperChackVehicles")||"[]");
+  list.splice(i,1); localStorage.setItem("paperChackVehicles",JSON.stringify(list)); showVehicles();
+}
+function serviceStatus(d){
+  if(!d) return "N/A";
+  const diff=(new Date()-new Date(d))/86400000;
+  return diff>90?"🔴 OVERDUE":diff>75?"🟡 DUE SOON":"🟢 OK";
 }
 
-function changePin() {
-  const savedPin = localStorage.getItem("paperChackPIN");
-  const oldPin = document.getElementById("oldPin").value;
-  const newPin = document.getElementById("newPin").value;
-  const confirmPin = document.getElementById("confirmPin").value;
-
-  if (oldPin !== savedPin) {
-    alert("Old PIN incorrect ❌");
-    return;
-  }
-
-  if (newPin.length !== 4 || newPin !== confirmPin) {
-    alert("New PIN invalid or not matching ❌");
-    return;
-  }
-
-  localStorage.setItem("paperChackPIN", newPin);
-  alert("PIN changed successfully 🔒✅");
-
-  document.getElementById("oldPin").value = "";
-  document.getElementById("newPin").value = "";
-  document.getElementById("confirmPin").value = "";
+/* ⏰ REMINDER */
+function saveReminder(){
+  localStorage.setItem("paperChackReminderDays",reminderDays.value);
+  alert("Reminder saved");
 }
 
-function backupData() {
-  const data = {
-    vehicles: localStorage.getItem("paperChackVehicles"),
-    profile: localStorage.getItem("paperChackProfile")
-  };
-
-  localStorage.setItem("paperChackBackup", JSON.stringify(data));
-  alert("Backup successful ✅");
+/* ☁️ BACKUP */
+function backupData(){
+  const b={vehicles:localStorage.getItem("paperChackVehicles"),profile:localStorage.getItem("paperChackProfile")};
+  localStorage.setItem("paperChackBackup",JSON.stringify(b)); alert("Backup done");
+}
+function restoreData(){
+  const b=JSON.parse(localStorage.getItem("paperChackBackup")||"null");
+  if(!b) return alert("No backup");
+  localStorage.setItem("paperChackVehicles",b.vehicles);
+  localStorage.setItem("paperChackProfile",b.profile);
+  showVehicles(); showProfile();
 }
 
-function restoreData() {
-  const backup = JSON.parse(localStorage.getItem("paperChackBackup"));
-  if (!backup) return alert("No backup found");
-
-  localStorage.setItem("paperChackVehicles", backup.vehicles);
-  localStorage.setItem("paperChackProfile", backup.profile);
-  showVehicles();
-  showProfile();
-  alert("Data restored ✅");
+/* 📄 PDF */
+function exportPDF(){
+  const {jsPDF}=window.jspdf; const doc=new jsPDF();
+  const list=JSON.parse(localStorage.getItem("paperChackVehicles")||"[]");
+  let y=10; doc.text("Paper Chack - Vehicles",10,y); y+=10;
+  list.forEach((v,i)=>{ doc.text(`${i+1}. ${v.vehicleNo} (${v.vehicleType})`,10,y); y+=8; });
+  doc.save("PaperChack.pdf");
 }
 
+/* 🚨 EMERGENCY */
+function openEmergencyMode(){
+  const list=JSON.parse(localStorage.getItem("paperChackVehicles")||"[]");
+  alert(list.map(v=>`${v.vehicleNo}\n${v.emergencyContact||""}`).join("\n\n"));
+}
+
+showVehicles(); showProfile();
