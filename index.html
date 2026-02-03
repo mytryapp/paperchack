@@ -6,12 +6,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 <body>
 
 <header>
   <h1>📄 Paper Chack</h1>
   <p>All your vehicle papers. Safe. Smart. Simple.</p>
 </header>
+
+  <section class="card">
+  <h2>👤 My Profile</h2>
+
+  <input type="text" id="userName" placeholder="Your Name">
+  <input type="tel" id="userMobile" placeholder="Mobile Number">
+  <input type="text" id="userCity" placeholder="City">
+
+  <button onclick="saveProfile()">💾 Save Profile</button>
+
+  <p id="profileInfo" style="margin-top:10px;color:#555;"></p>
+</section>
+  
+<label>Profile Photo</label>
+<input type="file" id="profilePhoto" accept="image/*">
+<img id="profilePreview" style="width:80px;border-radius:50%;margin-top:10px;display:none;">
+<button onclick="editProfile()" style="background:#0277bd;margin-top:10px;">
+  ✏️ Edit Profile
+</button>
+
 
 <main>
   <section class="card">
@@ -56,4 +80,15 @@
 
 <script src="script.js"></script>
 </body>
+  <div id="lockScreen" style="display:none;position:fixed;inset:0;
+background:#2e7d32;color:white;z-index:9999;
+display:flex;flex-direction:column;align-items:center;justify-content:center;">
+
+  <h2>🔒 Enter PIN</h2>
+  <input type="password" id="pinInput" maxlength="4"
+    style="padding:10px;font-size:20px;text-align:center;">
+  <button onclick="unlockApp()" style="margin-top:10px;">Unlock</button>
+</div>
+
 </html>
+
